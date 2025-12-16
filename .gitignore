@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+coverage/
+.expo/
+.expo-shared/
+android/
+ios/
+npm-debug.log
+yarn-error.log
+.DS_Store
