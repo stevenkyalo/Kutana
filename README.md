@@ -1,2 +1,1 @@
-# Kutana
-Kenyan Dating App
+Initial repo
