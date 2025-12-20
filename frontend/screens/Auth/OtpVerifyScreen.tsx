@@ -4,19 +4,31 @@ import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 export default function OtpVerifyScreen({ route, navigation }: any) {
   const { phone } = route.params;
   const [otp, setOtp] = useState('');
+  const [loading, setLoading] = useState(false);
 
   async function handleVerify() {
-    const res = await fetch('http://localhost:3000/auth/verify-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, otp }),
-    });
-    const data = await res.json();
-    if (data.success) {
-      // Proceed to profile setup (not implemented)
-      alert('Verified. User id: ' + data.user.id);
-    } else {
-      alert(data.message || 'Verify failed');
+    setLoading(true);
+    try {
+      const res = await fetch('http://localhost:3000/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otp }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        // On success navigate to main tab UI
+        // TODO: store auth token/session as needed
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Main' }],
+        });
+      } else {
+        alert(data.message || 'Verify failed');
+      }
+    } catch (err) {
+      alert('Network error');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -24,7 +36,7 @@ export default function OtpVerifyScreen({ route, navigation }: any) {
     <View style={styles.container}>
       <Text style={styles.title}>Enter the OTP sent to {phone}</Text>
       <TextInput value={otp} onChangeText={setOtp} style={styles.input} keyboardType="numeric" placeholder="123456" />
-      <Button title="Verify" onPress={handleVerify} />
+      <Button title={loading ? 'Verifying...' : 'Verify'} onPress={handleVerify} />
     </View>
   );
 }
